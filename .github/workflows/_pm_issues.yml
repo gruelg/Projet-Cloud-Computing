@@ -11,14 +11,12 @@ env:
 
 jobs:
   add-issue-to-project-board:
-    name: "add issue to project board"
     runs-on: ubuntu-latest
-    if: github.event.action == 'opened' || github.event.action == 'assigned'
     steps:     
-      - name: move issue unlabeled to 'To do'
+      - name: move issue to 'To do'
         uses: alex-page/github-project-automation-plus@v0.2.2
         if: |
-          github.event_name == 'issues' && github.event.action == 'unlabeled'
+          github.event_name == 'issues' 
         with:
           project: Cloud Computing 
           column: To do
