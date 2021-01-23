@@ -22,6 +22,7 @@ jobs:
         id: create-issue-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: '${issue.number}-${issue.title^}'
 
       - name: choose a pr template
         if: steps.create-issue-branch.outputs.branchName != ''
