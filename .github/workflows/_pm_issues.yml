@@ -5,8 +5,7 @@ on:
     types: [opened, assigned]
 
 env:
-  PROJECT_BOARD: "Cloud Computing "
-  ICEBOX_COLUMN_NAME: "Icebox"
+  PROJECT_BOARD: Cloud Computing 
   STARTED_COLUMN_NAME: "To Do"
   BEFORE_REVIEW_COLUMN_NAME: "Waiting on Review"
 
@@ -21,8 +20,6 @@ jobs:
         run: |
           if [[ "${{ github.event.action }}" == "assigned" ]]; then \
             echo "::set-output name=column-name::${{ env.STARTED_COLUMN_NAME }}"; \
-          else \
-            echo "::set-output name=column-name::${{ env.ICEBOX_COLUMN_NAME }}"; \
           fi
       - name: add issue to column
         uses: alex-page/github-project-automation-plus@v0.2.4
