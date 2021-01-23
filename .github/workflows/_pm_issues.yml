@@ -33,7 +33,6 @@ jobs:
 
   create-issue-branch:
     name: "create issue branch"
-    branchName: '${issue.number}-${issue.title^}'
     runs-on: ubuntu-latest
     if: github.event.action == 'assigned'
     steps:
@@ -47,7 +46,7 @@ jobs:
         if: steps.create-issue-branch.outputs.branchName != ''
         id: template
         env:
-          branchName: '${issue.number}-${issue.title^}'
+          BRANCH_NAME: '${issue.number}-${issue.title^}'
         run: |
           branch=$BRANCH_NAME
           if [[ $branch =~ ^fix/ ]]; then \
