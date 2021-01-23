@@ -5,9 +5,9 @@ on:
     types: [opened, assigned]
 
 env:
-  PROJECT_BOARD: "TakeShape"
+  PROJECT_BOARD: "Cloud Computing "
   ICEBOX_COLUMN_NAME: "Icebox"
-  STARTED_COLUMN_NAME: "In Progress"
+  STARTED_COLUMN_NAME: "To Do"
   BEFORE_REVIEW_COLUMN_NAME: "Waiting on Review"
 
 jobs:
