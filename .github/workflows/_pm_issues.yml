@@ -14,18 +14,14 @@ jobs:
     name: "add issue to project board"
     runs-on: ubuntu-latest
     if: github.event.action == 'opened' || github.event.action == 'assigned'
-    steps:
-      - name: get column name
-        id: column
-        run: |
-          if [[ "${{ github.event.action }}" == "assigned" ]]; then \
-            echo "::set-output name=column-name::${{ env.STARTED_COLUMN_NAME }}"; \
-          fi
-      - name: add issue to column
-        uses: alex-page/github-project-automation-plus@v0.2.4
+    steps:     
+      - name: move issue unlabeled to 'To do'
+        uses: alex-page/github-project-automation-plus@v0.2.2
+        if: |
+          github.event_name == 'issues' && github.event.action == 'unlabeled'
         with:
-          project: ${{ env.PROJECT_BOARD }}
-          column: ${{ steps.column.outputs.column-name }}
+          project: Cloud Computing 
+          column: To do
           repo-token: ${{ secrets.GH_TOKEN }}
      
   create-issue-branch:
