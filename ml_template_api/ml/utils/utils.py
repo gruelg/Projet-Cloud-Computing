@@ -1,5 +1,6 @@
 import pandas as pd
-import numpy as np
+from sklearn.model_selection import cross_val_score
+from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from datetime import date
@@ -19,6 +20,7 @@ class DataHandler:
         """
         self.df_vgsales = pd.read_csv('vgsales.csv', delimiter=",", index_col=0)
         print("Dataset chargés ")
+
 
 class FeatureRecipe:
 
@@ -73,14 +75,14 @@ class FeatureRecipe:
         print("nombre de colonnes : {} \n \
             number of discreet values : {} \n \
             number of continuous values : {} \n \
-            number of others : {} \n  \
+            number of others : {} \n \
             taille total : {}".format(len(self.df.columns), len(self.int), \
                                       len(self.floats), len(self.categories),
                                       len(self.int) + len(self.floats) + len(self.categories)))
 
     def fillNaNDate(self):
         self.df.Year = self.df.Year.fillna(self.df.Year.mean())
-        self.df.Year = self.df.Year.astype('int32')
+        self.df.Year = self.df.Year.astype('float32')
 
     def prepareData(self, seuil):
         self.fillNaNDate()
@@ -102,13 +104,13 @@ class FeatureExtractor:
         """
         self.df = data
         self.toDropList = flist
-        self.X = df[['Platform', 'Genre', 'NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales']].values
-        self.y = df['Global_Sales'].values
+        self.X = self.df[['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales']].values
+        self.y = self.df['Global_Sales'].values
         self.X_train, self.X_test, self.y_train, self.y_test = (), (), (), ()
 
     def train(self):
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=.2,
-                                                                                random_state=30)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=.2, random_state=30)
+
 class ModelBuilder:
     """
         Class for train and print results of ml model
@@ -127,7 +129,7 @@ class ModelBuilder:
     def load_model(self):
         try:
             self.model_filename = "model_{}.joblib.z".format(self.date)
-            clf = joblib.load(self.model_filename)
+            self.clf = joblib.load(self.model_filename)
         except:
             print("Erreur a l'ouverturedu fichier : {}".format(sys.exc_info()[0]))
 
@@ -136,11 +138,12 @@ class ModelBuilder:
 
         """
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, Y, test_size=.2, random_state=30)
-        self.clf = LinearRegression().fit(self.X_train, self.y_train)
+        self.clf = LinearRegression()
+        self.clf.fit(self.X_train, self.y_train)
 
     def predict_test(self, X):
         """
-        calcul des predictions
+            calcul des predictions
         """
         print('Debut predict_test ')
         predict = self.clf.predict(self.X_test)
@@ -151,19 +154,39 @@ class ModelBuilder:
         """
             Enregistrement du model
         """
-        if self.saveModel == True:
-            model_filename = "model_{}.joblib.z".format(self.date)
-            joblib.dump((self.clf), model_filename)
+        print("enregistrement du model")
+        model_filename = "model_{}.joblib.z".format(self.date)
+        joblib.dump((self.clf), model_filename)
+        print("enregistrement du model terminé")
 
     def print_accuracy(self):
         """
-        affichage de la prsicion des predictions
+            affichage de la precision des predictions
         """
         accuracy = self.clf.score(self.X_test, self.y_test)
-        print('precision {}'.format('Accuracy'))
+        print('precision : {}'.format(accuracy))
+
+    def FeatureImportance(self):
+        """
+            attribut un score aux valeurs utilisé pour la prediction basé
+            sur leurs utilité
+        """
+        self.clf.fit(self.X_train, self.y_train)
+        importance = self.clf.coef_
+        print('Feature importance :')
+        for i, v in enumerate(importance):
+            print('Feature: %0d, Score: %.5f' % (i, v))
+        pyplot.bar([x for x in range(len(importance))], importance)
+        pyplot.show()
+
+    def crossValidation(self, X, Y):
+        print("CrossValidation :")
+        scores = cross_val_score(self.clf, X, Y, cv=5)
+        print("%0.2f precision avec une deviation de %0.2f" % (scores.mean(), scores.std()))
 
     def calculData(self, X, Y):
         self.train(X, Y)
         self.predict_test(X)
         self.print_accuracy()
-        self.save_model("../")
+        self.crossValidation(X, Y)
+        self.FeatureImportance()
