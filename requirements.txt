@@ -1,0 +1,7 @@
+pandas
+sklearn
+matplotlib
+datetime
+joblib
+sys
+fastapi
