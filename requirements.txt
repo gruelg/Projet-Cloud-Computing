@@ -2,6 +2,5 @@ pandas
 sklearn
 matplotlib
 datetime
-joblib
-sys
+joblib==1.0.0
 fastapi
