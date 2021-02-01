@@ -18,7 +18,7 @@ class DataHandler:
         """
             charge les datasets des csv
         """
-        self.df_vgsales = pd.read_csv('vgsales.csv', delimiter=",", index_col=0)
+        self.df_vgsales = pd.read_csv('../vgsales.csv', delimiter=",", index_col=0)
         print("Dataset chargés ")
 
 
@@ -133,11 +133,11 @@ class ModelBuilder:
         except:
             print("Erreur a l'ouverturedu fichier : {}".format(sys.exc_info()[0]))
 
-    def train(self, X, Y):
+    def train(self, X, Y, split=0.2):
         """
 
         """
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, Y, test_size=.2, random_state=30)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, Y, test_size=split, random_state=30)
         self.clf = LinearRegression()
         self.clf.fit(self.X_train, self.y_train)
 
@@ -184,9 +184,9 @@ class ModelBuilder:
         scores = cross_val_score(self.clf, X, Y, cv=5)
         print("%0.2f precision avec une deviation de %0.2f" % (scores.mean(), scores.std()))
 
-    def calculData(self, X, Y):
+    def calculData(self, X, Y, split=None):
         self.train(X, Y)
         self.predict_test(X)
         self.print_accuracy()
-        self.crossValidation(X, Y)
+        #self.crossValidation(X, Y)
         self.FeatureImportance()

@@ -1,0 +1,6 @@
+pandas
+sklearn
+matplotlib
+datetime
+joblib==1.0.0
+fastapi

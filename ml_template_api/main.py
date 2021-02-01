@@ -1,8 +1,7 @@
-import ml.model
-
 import joblib
 from fastapi import FastAPI
 from datetime import date
+import numpy as np
 date = date.today().isoformat()
 app = FastAPI()
 
@@ -13,10 +12,8 @@ def read_root():
 
 
 @app.get("/{stri}")
-def param( stri: str):
+def param( stri: int):
 
     model_filename = "model_{}.joblib.z".format(date)
     clf = joblib.load(model_filename)
-    # Receives the input query from form
-    probas = clf.coef_
-    return {probas[0]}
+    return {"coef NA_Sales " :  clf.coef_[0], "coef EU_Sales " :  clf.coef_[1],"coef JP_Sales " :  clf.coef_[2],"coef Other_Sales " :  clf.coef_[3] }
